@@ -7,7 +7,7 @@
     "contracts:compile": "npx truffle compile",
     "contracts:migrate": "npx truffle migrate --network development",
     "contracts:test": "npx truffle test",
-    "ganache:start": "npx ganache-cli --deterministic --db .db",
+    "ganache:start": "npx ganache-cli --deterministic",
     "ganache:test": "npx truffle exec --network development ./scripts/index.js"
   },
   "keywords": [],

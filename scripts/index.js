@@ -1,12 +1,13 @@
 module.exports = async function main (callback) {
   try {
-    const Box = artifacts.require('Box');
-    const box = await Box.deployed();
+    const NFTVickreyAuction = artifacts.require('NFTVickreyAuction');
+    const auction = await NFTVickreyAuction.deployed();
 
-    await box.store(123);
-    const value = await box.retrieve();
+    const start = await auction.start();
+    const finish = await auction.finish();
 
-    console.log('Box value is', value.toString());
+    console.log(`Start: ${start}`);
+    console.log(`Finish: ${finish}`);
 
     callback(0);
   } catch (error) {
