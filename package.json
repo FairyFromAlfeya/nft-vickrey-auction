@@ -6,6 +6,7 @@
   "scripts": {
     "contracts:compile": "npx truffle compile",
     "contracts:migrate": "npx truffle migrate --network development",
+    "contracts:test": "npx truffle test",
     "ganache:start": "npx ganache-cli --deterministic --db .db",
     "ganache:test": "npx truffle exec --network development ./scripts/index.js"
   },
@@ -14,6 +15,8 @@
   "license": "ISC",
   "devDependencies": {
     "@openzeppelin/contracts": "^4.5.0",
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "chai": "^4.3.6",
     "ganache-cli": "^6.12.2",
     "truffle": "^5.5.9"
   }
