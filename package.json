@@ -16,6 +16,7 @@
   "devDependencies": {
     "@openzeppelin/contracts": "^4.5.0",
     "@openzeppelin/test-helpers": "^0.5.15",
+    "@openzeppelin/truffle-upgrades": "^1.15.0",
     "chai": "^4.3.6",
     "ganache-cli": "^6.12.2",
     "truffle": "^5.5.9"
