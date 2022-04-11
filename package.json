@@ -1,12 +1,15 @@
 {
   "name": "nft-vickrey-auction",
   "version": "1.0.0",
-  "description": "",
+  "description": "nft-vickrey-auction",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "Alexander Kunekov<fairyfromalfeya@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "truffle": "^5.5.9"
+  }
 }
