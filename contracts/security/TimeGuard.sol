@@ -9,12 +9,6 @@ abstract contract TimeGuard {
     using Timers for Timers.Timestamp;
     using SafeCast for uint256;
 
-    error AlreadyStarted(uint64 startAt);
-    error NotStarted(uint64 startAt);
-
-    error AlreadyFinished(uint64 finishAt);
-    error NotFinished(uint64 finishAt);
-
     Timers.Timestamp public startAt;
     Timers.Timestamp public finishAt;
 
@@ -27,22 +21,22 @@ abstract contract TimeGuard {
     }
 
     modifier onlyBeforeStart() {
-        if (startAt.isExpired()) revert AlreadyStarted(startAt.getDeadline());
+        require(startAt.isPending(), "Already started");
         _;
     }
 
     modifier onlyAfterStart() {
-        if (startAt.isPending()) revert NotStarted(startAt.getDeadline());
+        require(startAt.isExpired(), "Not started");
         _;
     }
 
     modifier onlyBeforeFinish() {
-        if (finishAt.isExpired()) revert AlreadyFinished(finishAt.getDeadline());
+        require(finishAt.isPending(), "Already finished");
         _;
     }
 
     modifier onlyAfterFinish() {
-        if (finishAt.isPending()) revert NotFinished(finishAt.getDeadline());
+        require(finishAt.isExpired(), "Not finished");
         _;
     }
 }
