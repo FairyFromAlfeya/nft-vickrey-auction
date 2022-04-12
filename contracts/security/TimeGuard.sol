@@ -15,34 +15,34 @@ abstract contract TimeGuard {
     error AlreadyFinished(uint64 finishAt);
     error NotFinished(uint64 finishAt);
 
-    Timers.Timestamp public start;
-    Timers.Timestamp public finish;
+    Timers.Timestamp public startAt;
+    Timers.Timestamp public finishAt;
 
     constructor(uint _startAt, uint _finishAt) {
         require(_startAt > block.timestamp, "Start must be bigger than current timestamp");
         require(_startAt < _finishAt, "Start must be lower than finish");
 
-        start = Timers.Timestamp(_startAt.toUint64());
-        finish = Timers.Timestamp(_finishAt.toUint64());
+        startAt = Timers.Timestamp(_startAt.toUint64());
+        finishAt = Timers.Timestamp(_finishAt.toUint64());
     }
 
     modifier onlyBeforeStart() {
-        if (start.isExpired()) revert AlreadyStarted(start.getDeadline());
+        if (startAt.isExpired()) revert AlreadyStarted(startAt.getDeadline());
         _;
     }
 
     modifier onlyAfterStart() {
-        if (start.isPending()) revert NotStarted(start.getDeadline());
+        if (startAt.isPending()) revert NotStarted(startAt.getDeadline());
         _;
     }
 
     modifier onlyBeforeFinish() {
-        if (finish.isExpired()) revert AlreadyFinished(finish.getDeadline());
+        if (finishAt.isExpired()) revert AlreadyFinished(finishAt.getDeadline());
         _;
     }
 
     modifier onlyAfterFinish() {
-        if (finish.isPending()) revert NotFinished(finish.getDeadline());
+        if (finishAt.isPending()) revert NotFinished(finishAt.getDeadline());
         _;
     }
 }
