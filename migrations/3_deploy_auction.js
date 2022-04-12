@@ -1,9 +1,9 @@
 const NFTVickreyAuction = artifacts.require("NFTVickreyAuction");
 
-module.exports = function(deployer) {
+module.exports = async (deployer) => {
   deployer.deploy(
     NFTVickreyAuction,
     1650456000,
-    1650542400
+    1650542400,
   );
 };

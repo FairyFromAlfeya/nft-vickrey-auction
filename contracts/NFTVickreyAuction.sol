@@ -3,11 +3,16 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/interfaces/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 import "./interfaces/INFTVickreyAuction.sol";
 import "./security/TimeGuard.sol";
 
-contract NFTVickreyAuction is Ownable, INFTVickreyAuction, TimeGuard {
+contract NFTVickreyAuction is Ownable, INFTVickreyAuction, TimeGuard, IERC721Receiver {
+    using SafeMath for uint256;
+
     // Events
     event AuctionFinished(address winner, uint amount);
     event BidRevealed(address bidder, uint amount);
@@ -20,6 +25,7 @@ contract NFTVickreyAuction is Ownable, INFTVickreyAuction, TimeGuard {
     uint public secondPlaceAmount;
 
     bool public isFinished;
+    bool public isStarted;
 
     // Committed bids
     mapping(address => Bid) private bids;
@@ -27,6 +33,9 @@ contract NFTVickreyAuction is Ownable, INFTVickreyAuction, TimeGuard {
     // Refunds
     address[] private refundAddresses;
     mapping(address => uint) private refunds;
+
+    IERC721 private erc721;
+    uint public nftId;
 
     constructor(uint _startAt, uint _finishAt) TimeGuard(_startAt, _finishAt) {}
 
@@ -60,12 +69,20 @@ contract NFTVickreyAuction is Ownable, INFTVickreyAuction, TimeGuard {
         emit BidRevealed(msg.sender, _value);
     }
 
+    function init(IERC721 _erc721, uint _nftId) external override onlyOwner onlyBeforeStart {
+        require(!isStarted, "Auction is started");
+
+        erc721 = _erc721;
+        nftId = _nftId;
+        erc721.safeTransferFrom(msg.sender, address(this), _nftId);
+    }
+
     // Back low bids and finish
     function finish() external override onlyOwner onlyAfterFinish {
         require(!isFinished, "Auction is finished");
 
         // Winner pays second place amount
-        payable(firstPlaceAddress).transfer(firstPlaceAmount - secondPlaceAmount);
+        payable(firstPlaceAddress).transfer(firstPlaceAmount.sub(secondPlaceAmount, "First place amount is less than second"));
         payable(secondPlaceAddress).transfer(secondPlaceAmount);
 
         for (uint i = 0; i < refundAddresses.length; i++) {
@@ -74,7 +91,9 @@ contract NFTVickreyAuction is Ownable, INFTVickreyAuction, TimeGuard {
         }
 
         payable(owner()).transfer(secondPlaceAmount);
+        erc721.transferFrom(address(this), firstPlaceAddress, nftId);
         isFinished = true;
+
         emit AuctionFinished(firstPlaceAddress, secondPlaceAmount);
     }
 
@@ -100,5 +119,14 @@ contract NFTVickreyAuction is Ownable, INFTVickreyAuction, TimeGuard {
             refundAddresses.push(_address);
             refunds[msg.sender] = _amount;
         }
+    }
+
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public virtual override returns (bytes4) {
+        return this.onERC721Received.selector;
     }
 }

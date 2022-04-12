@@ -32,12 +32,20 @@ function getAccountBalance(account) {
 
 module.exports = async function main (callback) {
   try {
+    const accounts = await web3.eth.getAccounts()
     const NFTVickreyAuction = artifacts.require('NFTVickreyAuction');
+    const ERC721PresetMinterPauserAutoId = artifacts.require('ERC721PresetMinterPauserAutoId');
     const auction = await NFTVickreyAuction.deployed();
-    const accounts = await web3.eth.getAccounts();
+    const erc721 = await ERC721PresetMinterPauserAutoId.deployed();
+    await erc721.mint(accounts[0]);
+    await erc721.approve(auction.address, 0);
 
+    console.log(`NFT owner: ${await erc721.ownerOf(0)}`);
     console.log(`Auction start at: ${timestampToDate(await auction.startAt())}`);
     console.log(`Auction finish at: ${timestampToDate(await auction.finishAt())}\n`);
+
+    await auction.init(erc721.address, 0);
+    console.log(`NFT owner after init: ${await erc721.ownerOf(0)}`);
 
     console.log(`Current time: ${timestampToDate(await time.latest())}`);
     await time.increaseTo(1650456583);
@@ -74,6 +82,7 @@ module.exports = async function main (callback) {
     await auction.finish();
 
     console.log(`Finished: ${await auction.isFinished()}`);
+    console.log(`NFT owner after finish: ${await erc721.ownerOf(0)}`);
     console.log(`Contract balance: ${await getAccountBalance(auction.address)}`)
     console.log(`Auction creator balance after finish: ${await getAccountBalance(accounts[0])}`);
     console.log(`Bidder9 balance after finish: ${await getAccountBalance(accounts[9])}`);
