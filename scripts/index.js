@@ -3,8 +3,8 @@ module.exports = async function main (callback) {
     const NFTVickreyAuction = artifacts.require('NFTVickreyAuction');
     const auction = await NFTVickreyAuction.deployed();
 
-    const start = await auction.start();
-    const finish = await auction.finish();
+    const start = await auction.startAt();
+    const finish = await auction.finishAt();
 
     console.log(`Start: ${start}`);
     console.log(`Finish: ${finish}`);

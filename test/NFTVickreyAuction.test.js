@@ -23,7 +23,7 @@ contract('NFTVickreyAuction', ([ owner, other ]) => {
   );
 
   it('should return start and finish', async () =>
-    expect(await this.auction.start() < await this.auction.finish()).to.be.true
+    expect(await this.auction.startAt() < await this.auction.finishAt()).to.be.true
   );
 
   // it('store emits an event', async function () {
